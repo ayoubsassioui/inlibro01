@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -54,18 +54,24 @@ def generateProfilFromFiles( racine, version ):
 
             # Get file type
             ## TODO Ayoub : Remplacer la ligne suivante pour demander le type de fichier.  Mettre une condition 
-            
-            f = input(str("Saisir le type du fichier: [M]ARC21, [C]sv, [T]ext, [X]ml :  M , C , T , X ? ")) 
-            if f == 'M':
-                filetype = 'MARC21'
-            elif f == 'T':
-                filetype = 'text'
-            elif f == 'C':
-                filetype = 'CSV'
-            else f == 'X':
-                filetype = 'xml'
-            filesInfo[filename] = {}
-            filesInfo[filename]['type'] = filetype
+            filetype = None
+            if sys.platform == 'linux':
+                filetype = magic.from_file( filePath )
+            else:
+                f = input(str("Saisir le type du fichier: [M]ARC21, [C]sv, [T]ext, [X]ml :  M , C , T , X ? ")) 
+                while f not in ('M' , 'C' , 'T' , 'X'):
+                    print("Type inconnu, veuillez resaisir le type du fichier!!")
+                if f == 'M':
+                    filetype = 'MARC21'
+                elif f == 'T':
+                    filetype = 'text'
+                elif f == 'C':
+                    filetype = 'CSV'
+                elif f == 'X':
+                    filetype = 'xml'
+                    
+                filesInfo[filename] = {}
+                filesInfo[filename]['type'] = filetype
             
             if "MARC21" in filetype:
                 print("Fichier MARC21: ignoré")
@@ -190,13 +196,15 @@ if sigb is None:
 ## TODO Ayoub : Vérifier si le fichier profil.xslx existe, si oui, le lire, sinon, on le génère à partir des fichiers
 ##              Dans les deux cas, le contenu de filesInfo devrait être le même... pour l'instant
 
-filesInfo = generateProfilFromFiles( racine, version )
-print(filesInfo)
-
-
 if path.exists("profil.xslx") == True :
     profil = load_workbook('profil.xlsx')
+    filesInfo = generateProfilFromFiles( racine, version )
+    print(filesInfo)
+    
+    
 else:
+    filesInfo = generateProfilFromFiles( racine, version )
+    print(filesInfo)
     # Create the Workbook
     profil = Workbook()
     fichiers = profil.active
