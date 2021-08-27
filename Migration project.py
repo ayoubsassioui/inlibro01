@@ -12,11 +12,6 @@ if sys.platform == 'linux':
     import magic
 import csv
 from os import path
-
-
-# In[ ]:
-
-
 # Pour la génération d'un fichier Excel
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font, NamedStyle
@@ -58,7 +53,7 @@ def generateProfilFromFiles( racine, version ):
             if sys.platform == 'linux':
                 filetype = magic.from_file( filePath )
             else:
-                f = input(str("Saisir le type du fichier: [M]ARC21, [C]sv, [T]ext, [X]ml :  M , C , T , X ? ")) 
+                f = input("Saisir le type du fichier: [M]ARC21, [C]sv, [T]ext, [X]ml :  M , C , T , X ? ").upper()
                 while f not in ('M' , 'C' , 'T' , 'X'):
                     print("Type inconnu, veuillez resaisir le type du fichier!!")
                 if f == 'M':
@@ -108,7 +103,6 @@ def generateProfilFromFiles( racine, version ):
                         filesInfo[filename]['columns'][column]['empty'] = 0
                         for emptyValue in (0, '', None, '""'):
                             filesInfo[filename]['columns'][column]['empty'] += counter[emptyValue]
-
                     print( table )
                 elif userInput == 'n':
                     choice, delimiter, quotechar = askForCSVSpecs(delimiter=delimiter, quotechar=quotechar)
@@ -196,12 +190,53 @@ if sigb is None:
 ## TODO Ayoub : Vérifier si le fichier profil.xslx existe, si oui, le lire, sinon, on le génère à partir des fichiers
 ##              Dans les deux cas, le contenu de filesInfo devrait être le même... pour l'instant
 
+
 if path.exists("profil.xslx") == True :
     profil = load_workbook('profil.xlsx')
-    filesInfo = generateProfilFromFiles( racine, version )
-    print(filesInfo)
-    
-    
+    filesInfo = {}
+    wb.active = "Fichiers"
+    for row in wb.active.iter_rows(min_row=4, min_col=1, max_col=1, max_row=len(filenames)+3):
+        for cell in row:
+            filesInfo[cell.value] = {}
+    for filename in filesInfo.keys():
+        for row in wb.active.iter_rows(min_row=4, min_col=2, max_col=2, max_row=len(filenames)+3):
+            for cell in row:
+                filesInfo[filename]['type'] = cell.value
+    for filename in filesInfo.keys():
+        for row in wb.active.iter_rows(min_row=4, min_col=3, max_col=3, max_row=len(filenames)+3):
+            for cell in row:
+                filesInfo[filename]['specs'] = cell.value
+    for filename in filesInfo.keys():
+        for row in wb.active.iter_rows(min_row=4, min_col=4, max_col=4, max_row=len(filenames)+3):
+            for cell in row:
+                filesInfo[filename]['count'] = cell.value
+
+    for x in range(3,len(wb.sheetnames)):
+        wb.active = x
+        for filename in filesInfo.keys():
+            filesInfo[filename]['columns'] = {}
+            for row in wb.active.iter_rows(min_row=3, min_col=1, max_col=1):
+                for cell in row:
+                    if cell.value == "":
+                        break
+                    else:
+                        filesInfo[filename]['columns'][cell.value] = {}     
+            
+            for x in filesInfo[filename]['columns'].keys():
+                for row in wb.active.iter_rows(min_row=3, min_col=3, max_col=3):
+                    for cell in row:
+                        if cell.value == "":
+                            break
+                        else:
+                            filesInfo[filename]['columns'][x]['distinct'] = cell.value      
+                for row in wb.active.iter_rows(min_row=3, min_col=4, max_col=4):
+                    for cell in row:
+                        if cell.value == "":
+                            break
+                        else:
+                            filesInfo[filename]['columns'][x]['empty'] = cell.value        
+    print(filesInfo)          
+            
 else:
     filesInfo = generateProfilFromFiles( racine, version )
     print(filesInfo)
