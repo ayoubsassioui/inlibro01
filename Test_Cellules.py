@@ -73,8 +73,6 @@ for x in range(1,len(profil.sheetnames)):
             cell.fill = PatternFill(fill_type='solid', fgColor='99B5D5')
             bd = Side(style='thin', color="000000")
             cell.border = Border(left=None, top=bd, right=None , bottom=bd)
-#################################################################################################saving
-profil.save("racine/sortie/test/profil.xlsx")
 
 
 # In[ ]:
