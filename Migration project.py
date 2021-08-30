@@ -194,28 +194,28 @@ if sigb is None:
 if path.exists("profil.xslx") == True :
     profil = load_workbook('profil.xlsx')
     filesInfo = {}
-    wb.active = "Fichiers"
-    for row in wb.active.iter_rows(min_row=4, min_col=1, max_col=1, max_row=len(filenames)+3):
+    profil.active = "Fichiers"
+    for row in profil.active.iter_rows(min_row=4, min_col=1, max_col=1, max_row=len(filenames)+3):
         for cell in row:
             filesInfo[cell.value] = {}
     for filename in filesInfo.keys():
-        for row in wb.active.iter_rows(min_row=4, min_col=2, max_col=2, max_row=len(filenames)+3):
+        for row in profil.active.iter_rows(min_row=4, min_col=2, max_col=2, max_row=len(filenames)+3):
             for cell in row:
                 filesInfo[filename]['type'] = cell.value
     for filename in filesInfo.keys():
-        for row in wb.active.iter_rows(min_row=4, min_col=3, max_col=3, max_row=len(filenames)+3):
+        for row in profil.active.iter_rows(min_row=4, min_col=3, max_col=3, max_row=len(filenames)+3):
             for cell in row:
                 filesInfo[filename]['specs'] = cell.value
     for filename in filesInfo.keys():
-        for row in wb.active.iter_rows(min_row=4, min_col=4, max_col=4, max_row=len(filenames)+3):
+        for row in profil.active.iter_rows(min_row=4, min_col=4, max_col=4, max_row=len(filenames)+3):
             for cell in row:
                 filesInfo[filename]['count'] = cell.value
 
-    for x in range(3,len(wb.sheetnames)):
-        wb.active = x
+    for x in range(3,len(profil.sheetnames)):
+        profil.active = x
         for filename in filesInfo.keys():
             filesInfo[filename]['columns'] = {}
-            for row in wb.active.iter_rows(min_row=3, min_col=1, max_col=1):
+            for row in profil.active.iter_rows(min_row=3, min_col=1, max_col=1):
                 for cell in row:
                     if cell.value == "":
                         break
@@ -223,13 +223,13 @@ if path.exists("profil.xslx") == True :
                         filesInfo[filename]['columns'][cell.value] = {}     
             
             for x in filesInfo[filename]['columns'].keys():
-                for row in wb.active.iter_rows(min_row=3, min_col=3, max_col=3):
+                for row in profil.active.iter_rows(min_row=3, min_col=3, max_col=3):
                     for cell in row:
                         if cell.value == "":
                             break
                         else:
                             filesInfo[filename]['columns'][x]['distinct'] = cell.value      
-                for row in wb.active.iter_rows(min_row=3, min_col=4, max_col=4):
+                for row in profil.active.iter_rows(min_row=3, min_col=4, max_col=4):
                     for cell in row:
                         if cell.value == "":
                             break
@@ -240,6 +240,7 @@ if path.exists("profil.xslx") == True :
 else:
     filesInfo = generateProfilFromFiles( racine, version )
     print(filesInfo)
+    
     # Create the Workbook
     profil = Workbook()
     fichiers = profil.active
@@ -265,4 +266,10 @@ else:
                 worksheet.append([column, "", filesInfo[filename]['columns'][column]['distinct'], filesInfo[filename]['columns'][column]['empty'] ])
 
     profil.save( racine + "/profil.xlsx" )
+
+
+# In[ ]:
+
+
+
 
