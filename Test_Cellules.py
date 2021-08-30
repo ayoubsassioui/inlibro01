@@ -6,6 +6,7 @@
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font, NamedStyle
+from openpyxl.worksheet.datavalidation import DataValidation
 
 
 # In[ ]:
@@ -79,17 +80,23 @@ profil.save("racine/sortie/test/profil.xlsx")
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
+#DataValidation
+wb = Workbook()
+ws = wb.active
+#On definie notre liste déroulante
+dv = DataValidation(type="list", formula1='"a,b,c"', allow_blank=True)
+#On choisit les cellules où on veut appliquer notre datavalidation
+c1 = ws["A1"]
+c2 = ws["B1"]
+dv.add(c1)
+dv.add(c2)
+ws.add_data_validation(dv) 
+#Message d'invite
+dv.prompt = 'Veuillez choisir parmi les valeurs de la liste'
+dv.promptTitle = 'Liste de Selection'
+#Message d'erreur
+dv.error ='Valeur non valide'
+dv.errorTitle = 'Entrée invalide!!!'
+#saving
+wb.save("test.xlsx")
 
