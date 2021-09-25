@@ -19,14 +19,14 @@ filename = input('Saisir le nom du fichier  :')     #Lexpl:          PLES_CI_DT_
 C = input('Saisir le nom de la colonne  :')         #Lexpl:          address_2
 
 
-# In[11]:
+# In[9]:
 
 
 #On va traiter la colonne address2 du fichier subscriber comme exemple
 e = etl.fromcsv(filename , delimiter = '|', quotechar = "'", quoting = csv.QUOTE_ALL , encoding="utf8")
 
 
-# In[12]:
+# In[10]:
 
 
 l = list(e[C])
@@ -41,22 +41,22 @@ l2 = sorted(l1)
 l3 = np.asarray((unique, counts)).T
 
 
-# In[13]:
+# In[11]:
 
 
 l3
 
 
-# In[14]:
+# In[12]:
 
 
 wl = WordNetLemmatizer()
 w = []
-for i in range(1,len(l3)):
+for i in range(len(l3)):
     w.append(wl.lemmatize(l3[i][0]))
 
 
-# In[25]:
+# In[13]:
 
 
 #Charger le fichier profil et activer la Worksheet Correspondance
@@ -67,35 +67,28 @@ profil.active = ws[2]
 #Demander à l'usager de saisir le label
 label = input('Saisir le label :')
 profil.active['A1'] = label
+
 #Remplir la colonne par les valeurs distinctes detectées
-for x in range(1,len(l3)):
-    for row in ws[2].iter_rows(min_row=2, min_col=1, max_col=1, max_row=2+len(l3)):
-        for cell in row:
-            cell.value == l3[x][0]
+x = 0
+for row in ws[2].iter_rows(min_row=2, min_col=1, max_col=1, max_row=1+len(l3)):
+    for cell in row:
+        cell.value = l3[x][0]
+        x+= 1
+        
 #Remplir la colonne par le nombre d'occurence de ces valeurs
-for row in ws[2].iter_rows(min_row=2, min_col=2, max_col=2, max_row=2+len(l3)):
-    for x in range(1,len(l3)):
-        for cell in row:
-            cell.value == l3[x][1]
+x = 0
+for row in ws[2].iter_rows(min_row=2, min_col=2, max_col=2, max_row=1+len(l3)):
+    for cell in row:
+        cell.value = l3[x][1]
+        x+= 1
 #Remplir la colonne par la suggestion de la normalization
-for x in range(1,len(l3)):
-    for row in ws[2].iter_rows(min_row=2, min_col=3, max_col=3, max_row=2+len(l3)):
-        for cell in row:
-            cell.value == w[x-1]
+x = 0
+for row in ws[2].iter_rows(min_row=2, min_col=3, max_col=3, max_row=1+len(l3)):
+    for cell in row:
+        cell.value = w[x]
+        x+= 1
 
 profil.save('Profil.xlsx')
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
